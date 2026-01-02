@@ -87,7 +87,6 @@
 //        }
 //    }
 //}
-
 using System;
 using System.Linq;
 using EfCoreDemo.Data;
@@ -108,6 +107,23 @@ class Program
                 foreach (var s in students)
                 {
                     Console.WriteLine($"Student ID: {s.Id}, Name: {s.Name}, Age: {s.Age}");
+                }
+
+                // Add student "Amit" if not already present
+                if (!context.Students.Any(s => s.Name == "Amit"))
+                {
+                    // Ensure that the department exists
+                    var department = context.Departments.FirstOrDefault(d => d.Id == 1);
+                    if (department != null)
+                    {
+                        context.Students.Add(new Student { Name = "Amit", Age = 25, DepartmentId = department.Id });
+                        context.SaveChanges();
+                        Console.WriteLine("Sample student 'Amit' added to the database.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Department with Id 1 does not exist.");
+                    }
                 }
 
                 // Update a student and re-fetch students to display updated data
@@ -131,19 +147,16 @@ class Program
                     Console.WriteLine($"Name: {s.Name} - Age: {s.Age}");
                 }
 
-                // Deleting a student
+                // Viewing student details before deletion
                 var studentToDelete = context.Students.FirstOrDefault(s => s.Name == "Amit");
 
-                // Delete student named "Amit" and age 30
-                //var studentToDelete = context.Students.FirstOrDefault(s => s.Name == "Amit" && s.Age == 30);
-
-                // Delete student with a specific Id (e.g., Id == 1)
-                //var studentToDelete = context.Students.FirstOrDefault(s => s.Id == 1);
                 if (studentToDelete != null)
                 {
-                    //context.Students.RemoveRange(studentToDelete);// DElete All Students with Name "Amit"
+                    // Display student details before deletion
+                    Console.WriteLine($"\nStudent to be deleted: {studentToDelete.Name}, Age: {studentToDelete.Age}");
 
-                    context.Students.Remove(studentToDelete)
+                    // Now delete the student
+                    context.Students.Remove(studentToDelete);
                     context.SaveChanges();
                     Console.WriteLine("\nStudent 'Amit' deleted successfully!");
                 }
